@@ -12,7 +12,7 @@ int dimension;      // quantidade total de vertices
 
 void printData();
 
-//E strutura com dados de arestas removidas e custos
+// Estrutura com dados de arestas removidas e custos
 struct InsertionInfo {
     int noInserido; // número do nó a ser inserido
     int arestaRemovida; // aresta { i , j } onde o nó seria inserido
@@ -55,9 +55,18 @@ vector<int> construcao(double alfa, vector<int> listaDeCandidatos){
 
     // Gerador de desordem na definição dos elementos iniciais por meio de um valor aleatório
     int sAleatorios = alfa * custoInsercao.size();  
+    // Escolhe aleatoriamente um dos elementos de sAleatorios aleatoriamente
+    int nAleatorios = rand()%sAleatorios;
 
-    
+    //Insere nó escolhido no subtour
+    s.insert(s.begin() + /** O que coloco aqui ? **/ custoInsercao[nAleatorios].noInserido);
 
+    //Apagando nó da lista de candidatos
+    for(auto l : listaDeCandidatos){
+      if(listaDeCandidatos[l] == custoInsercao[nAleatorios].noInserido){
+        listaDeCandidatos.erase(listaDeCandidatos.begin() + l );
+      }
+    }
   }
 }
 
@@ -76,6 +85,7 @@ int main(int argc, char **argv){
   for (int i = 1; i <= dimension; i++){ // gera vetor para as cidades
     cidades.push_back(i);
   }
+ 
   construcao(valorRand, cidades);
 
   printData();
