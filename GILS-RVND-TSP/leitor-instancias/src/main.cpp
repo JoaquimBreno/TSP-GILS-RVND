@@ -24,7 +24,7 @@ vector<int> construcao(double alfa, vector<int> listaDeCandidatos){
   vector<int> s;
 
   // Inicia o percurso com o depósito
-  s.push_back(listaDeCandidatos[1]);
+  s.push_back(listaDeCandidatos[0]);
   listaDeCandidatos.erase(listaDeCandidatos.begin());
 
   // Subtour, definindo aleatoriamente as cidades:
@@ -36,10 +36,10 @@ vector<int> construcao(double alfa, vector<int> listaDeCandidatos){
 
   // Cálculo do custo de inserção de nós
   while (!listaDeCandidatos.empty()){ // lista de candidatos deve estar zerada ao final do processo
+  
+    vector <InsertionInfo> custoInsercao((s.size() - 1) * listaDeCandidatos.size()); 
 
-    vector <InsertionInfo> custoInsercao(s.size() - 1 * listaDeCandidatos.size()); 
-
-    for (int i = 0, j = 1, l = 0; i < s.size() - 2; i++, j++){
+    for (int i = 0, j = 1, l = 0; i < s.size() - 1; i++, j++){
       for(auto k : listaDeCandidatos){
         custoInsercao[l].custo = matrizAdj[s[i]][k] + matrizAdj[s[j]][k] - matrizAdj[s[i]][s[j]];
         custoInsercao[l].noInserido = k;
@@ -47,27 +47,26 @@ vector<int> construcao(double alfa, vector<int> listaDeCandidatos){
         l++;
       }
     }
-
+  
     // Ordenação SD pelos custos de inserção
     sort( custoInsercao.begin(), custoInsercao.end(), [](InsertionInfo a, InsertionInfo b){ 
       return a.custo < b.custo;
-    });
-
+    });    
     // Gerador de desordem na definição dos elementos iniciais por meio de um valor aleatório
-    int sAleatorios = alfa * custoInsercao.size();  
+    int sAleatorios = alfa * custoInsercao.size(); 
     // Escolhe aleatoriamente um dos elementos de sAleatorios aleatoriamente
-    int nAleatorios = rand()%sAleatorios;
-
+    int nAleatorios = rand() % sAleatorios;
     //Insere nó escolhido no subtour
-    s.insert(s.begin() + /** O que coloco aqui ? **/ custoInsercao[nAleatorios].noInserido);
-
+    s.insert(s.begin() + (custoInsercao[nAleatorios].arestaRemovida + 1) ,  custoInsercao[nAleatorios].noInserido);
+ 
     //Apagando nó da lista de candidatos
-    for(auto l : listaDeCandidatos){
+    for(int l = 0; l < listaDeCandidatos.size(); l++){
       if(listaDeCandidatos[l] == custoInsercao[nAleatorios].noInserido){
         listaDeCandidatos.erase(listaDeCandidatos.begin() + l );
       }
     }
   }
+  return s;
 }
 
 int main(int argc, char **argv){
@@ -79,16 +78,19 @@ int main(int argc, char **argv){
 
   // Início do algoritmo principal
   /** Geração de valor aleatório para a construção**/
-  double valorRand = rand() % 100 / 100;
+  double valorRand = (rand() % 100) /100.0 ;
   /** Vetor que armazena as cidades **/
   vector<int> cidades;
-  for (int i = 1; i <= dimension; i++){ // gera vetor para as cidades
+  for (int i = 1; i << dimension; i++){ // gera vetor para as cidades
     cidades.push_back(i);
   }
  
-  construcao(valorRand, cidades);
+  vector <int> so = construcao(valorRand, cidades);
 
-  printData();
+  for( int c = 0; c < so.size(); c++ ){
+   cout << so[c] << endl;
+  }
+  //printData();
   return 0;
 }
 
