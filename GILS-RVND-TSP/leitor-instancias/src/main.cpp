@@ -10,6 +10,10 @@ using namespace std;
 double **matrizAdj; // matriz de adjacencia
 int dimension;      // quantidade total de vertices
 
+// Estrutura com dados das movimentações swap
+typedef struct  main{
+  
+} move;
 
 
 // Estrutura com dados de arestas removidas e custos
@@ -18,28 +22,6 @@ struct InsertionInfo {
     int arestaRemovida; // aresta { i , j } onde o nó seria inserido
     double custo; // delta ao inserir o nó na aresta
 };
-
-// Swap
-double swap(vector <int> s){
-  double delta;
-
-
-  for( int i = 1; i < s.size(); i++){
-    for( int j = i + 1; j < s.size(); j++){
-      // Para i = 2 , j = 5 ...
-      // c24 +  c26 + c51 + c53 - ( c21 + c23 + c54 + c56)
-      // cij-1 + cij+1 + cji-1 + cji+1 - (cii-1 + cii+1 + cjj-1 + cjj+1)
-      delta= matrizAdj[s[i]][s[j-1]] + matrizAdj[s[i]][s[j+1]] + matrizAdj[s[j]][s[i-1]] + matrizAdj[s[j]][s[i+1]] - ( matrizAdj[s[i]][s[i-1]] + matrizAdj[s[i]][s[i+1]] + matrizAdj[s[j]][s[j-1]] + matrizAdj[s[j]][s[j+1]]);
-    }
-  }
-
-
-}
-
-// Estruturas de vizinhança
-void RVND(vector <int> &s){
-  swap(s);
-}
 
 // Calcula o custo total da distância entre todos os nós da solução
 double custoTotal(vector <int> s){
@@ -50,6 +32,34 @@ double custoTotal(vector <int> s){
   }
 
   return custoTotal;
+}
+
+// Swap
+double swap(vector <int> &s){
+  double delta;
+
+
+  for( int i = 1; i < s.size(); i++){
+    for( int j = i + 1; j < s.size(); j++){
+      // Para i = 2 , j = 5 ...
+      // c24 +  c26 + c51 + c53 - ( c21 + c23 + c54 + c56)
+      // cij-1 + cij+1 + cji-1 + cji+1 - (cii-1 + cii+1 + cjj-1 + cjj+1)
+      delta= matrizAdj[s[i]][s[j-1]] + matrizAdj[s[i]][s[j+1]] + matrizAdj[s[j]][s[i-1]] + matrizAdj[s[j]][s[i+1]] - 
+      ( matrizAdj[s[i]][s[i-1]] + matrizAdj[s[i]][s[i+1]] + matrizAdj[s[j]][s[j-1]] + matrizAdj[s[j]][s[j+1]] );
+
+
+
+    }
+  }
+
+
+}
+
+// Estruturas de vizinhança
+void rvnd(vector <int> &s){
+
+  vector <int>
+  swap(s);
 }
 
 // Função vector que retorna uma solução viável para o tsp
@@ -76,7 +86,7 @@ vector<int> construcao(double alfa, vector<int> listaDeCandidatos){
 
     for (int i = 0, j = 1, l = 0; i < s.size() - 1; i++, j++){
       for(auto k : listaDeCandidatos){
-        custoInsercao[l].custo = matrizAdj[s[i]][k] + matrizAdj[s[j]][k] - matrizAdj[s[i]][s[j]];
+        custoInsercao[l].custo = matrizAdj[s[i]][k] + matrizAdj[s[j]][k] - matrizAdj[s[i]][s[j]]; // custo = distância(i,k) + distancia(j,k) - distancia(i,j)
         custoInsercao[l].noInserido = k;
         custoInsercao[l].arestaRemovida = i;
         l++;
@@ -104,14 +114,13 @@ vector<int> construcao(double alfa, vector<int> listaDeCandidatos){
   return s;
 }
 
-
-
-int main(int argc, char **argv){
-
-  readData(argc, argv, &dimension, &matrizAdj);
-  int iIls;
+// Função que retorna o custo total após todas as operaões
+double gils_rvnd(int dimension){
   // Seed para geração de números aleatórios
   srand(time(NULL));
+
+  vector <int> s;
+  int iIls;
 
   // Controla o número de tentativas de melhorar a solução
   if(dimension>=150){
@@ -124,7 +133,7 @@ int main(int argc, char **argv){
   // Início do algoritmo principal
 
   for( int iMax = 1; iMax <= 50; iMax++){
-  //srand(time(NULL));
+
   // Vetor que armazena as cidades 
   vector<int> cidades;
   //double somatorioS;/**somatoriosA;**/
@@ -136,23 +145,36 @@ int main(int argc, char **argv){
       cidades.push_back(i);
     }
 
-  vector <int> s = construcao(valorRand, cidades);
+  s = construcao(valorRand, cidades);
   vector <int> sA = s; 
 
   int iterIls = 0;
   
-   while(iterIls < iIls){
+    while(iterIls < iIls){
     
-   RVND(s);
+   // rvnd(s);
 
-   double somatorioS = custoTotal(s);
-   // double somatoriosA = custoTotal(sA);
-    //if
-   // iterIls++;
-    cout << somatorioS << endl;
-    //}
+     double somatorioS = custoTotal(s);
+     // double somatoriosA = custoTotal(sA);
+       //if
+       // iterIls++;
+     
+      //}
+    }  
   }
 
+  return custoTotal(s);
+}
+
+int main(int argc, char **argv){
+
+  readData(argc, argv, &dimension, &matrizAdj);
+
+  // Recebe o valor da função sícrona que calcula o custo após as operações
+  double somatorioFinal = gils_rvnd(dimension);
+
+
+  cout << somatorioFinal << endl;
   return 0;
 }
 
